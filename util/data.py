@@ -1,26 +1,68 @@
-
+import pandas as pd
+# import numpy as np
+import tensorflow as tf
+# from tensorflow import keras
+# from tensorflow.keras import layers
+# import matplotlib.pyplot as plt
+# from IPython import display
 # TODO
 class DataLoader:
-    def __init__(self, data_url: str) -> None:
-        self.data_url = data_url
-        data_path = ""
+    def __init__(self) -> None:
+        data_path = "commond_dataset/"
         self.audio_path = data_path + "/audio/"
-        self.metadata_path = data_path + "/metadata.csv"
+        self.metadata_path = data_path + "/validated.csv"
+        print(self.metadata_path)
 
-        self.fetch_data()
-        self.load_data()
-        self.split_data()
+
+        metadata_df = self.load_data()  # Stockez le résultat dans metadata_df
+        self.split_data(metadata_df)    # Passez metadata_df à split_data
 
     def fetch_data(self) -> None:
         # Download data from the specified URL and return paths
         pass
 
     def load_data(self) -> None:
-        # Read metadata file and parse it
+        #we need a dataframe to manipulate information
+        metadata_df = pd.read_csv(self.metadata_path, sep="|", header=None, quoting=3)
+        metadata_df.columns = ["client_id", "path", "sentence", "up_votes", "down_votes", "age", "gender", "accents", "locale", "segment"]
+        metadata_df = metadata_df[["path", "sentence"]]
+        metadata_df = metadata_df.sample(frac=1).reset_index(drop=True)
+        return(metadata_df)
+
         pass
 
-    def split_data(self) -> None:
+    def split_data(self, metadata_df) -> None:
         # Split the data into training and validation sets
+        split = int(len(metadata_df) * 0.80)
+        df_train = metadata_df[:split]
+        df_val = metadata_df[split:]
+
+        print(f"Size of the training set: {len(df_train)}")
+        print(f"Size of the validating set: {len(df_val)}")
+
+        batch_size = 32
+        # Define the training dataset
+        train_dataset = tf.data.Dataset.from_tensor_slices(
+            (list(df_train["path"]), list(df_train["sentence"]))
+        )
+        train_dataset = (
+            train_dataset.map(encode_single_sample, num_parallel_calls=tf.data.AUTOTUNE)
+            .padded_batch(batch_size)
+            .prefetch(buffer_size=tf.data.AUTOTUNE)
+        )
+
+        # Define the validation dataset
+        validation_dataset = tf.data.Dataset.from_tensor_slices(
+            (list(df_val["path"]), list(df_val["sentence"]))
+        )
+        validation_dataset = (
+            validation_dataset.map(encode_single_sample, num_parallel_calls=tf.data.AUTOTUNE)
+            .padded_batch(batch_size)
+            .prefetch(buffer_size=tf.data.AUTOTUNE)
+        )
+
+        print(validation_dataset)
+
         pass
 
 
@@ -43,3 +85,6 @@ class DataPrepocessor:
 
     def create_dataset(self):
         pass
+
+
+
