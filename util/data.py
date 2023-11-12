@@ -11,8 +11,8 @@ class DataLoader():
         print(self.metadata_path)
 
 
-        metadata_df = self.load_data()  # Stockez le résultat dans metadata_df
-        self.split_data(metadata_df)    # Passez metadata_df à split_data
+        metadata_df = self.load_data()  # save the result in metadata_df
+        self.split_data(metadata_df)    # from  metadata_df to split_data
 
 
     def load_data(self) -> None:
@@ -33,8 +33,6 @@ class DataLoader():
 
         print(f"Size of the training set: {len(df_train)}")
         print(f"Size of the validating set: {len(df_val)}")
-
-        pass
 
 
 class DataPrepocessor:
@@ -88,4 +86,28 @@ class DataPrepocessor:
         return spectrogram, label
 
     def create_dataset(self):
-        pass
+        batch_size = 32
+        # Define the training dataset
+        train_dataset = tf.data.Dataset.from_tensor_slices(
+            (list(df_train["path"]), list(df_train["sentence"]))
+        )
+        train_dataset = (
+            train_dataset.map(encode_single_sample, num_parallel_calls=tf.data.AUTOTUNE)
+            .padded_batch(batch_size)
+            .prefetch(buffer_size=tf.data.AUTOTUNE)
+        )
+
+        # Define the validation dataset
+        validation_dataset = tf.data.Dataset.from_tensor_slices(
+            (list(df_val["path"]), list(df_val["sentence"]))
+        )
+        validation_dataset = (
+            validation_dataset.map(encode_single_sample, num_parallel_calls=tf.data.AUTOTUNE)
+            .padded_batch(batch_size)
+            .prefetch(buffer_size=tf.data.AUTOTUNE)
+        )
+
+        print(validation_dataset)
+
+
+
