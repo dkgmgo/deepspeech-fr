@@ -1,28 +1,37 @@
-import tensorflow as tf
-from tensorflow import keras
+import pandas as pd
 
 # TODO
-class DataLoader:
-    def __init__(self, data_url: str) -> None:
-        self.data_url = data_url
-        data_path = ""
+class DataLoader():
+    def __init__(self) -> None:
+        data_path = "commond_dataset/"
         self.audio_path = data_path + "/audio/"
-        self.metadata_path = data_path + "/metadata.csv"
+        self.metadata_path = data_path + "/validated.csv"
+        print(self.metadata_path)
 
-        self.fetch_data()
-        self.load_data()
-        self.split_data()
 
-    def fetch_data(self) -> None:
-        # Download data from the specified URL and return paths
-        pass
+        metadata_df = self.load_data()  # Stockez le résultat dans metadata_df
+        self.split_data(metadata_df)    # Passez metadata_df à split_data
+
 
     def load_data(self) -> None:
-        # Read metadata file and parse it
+        #we need a dataframe to manipulate information
+        metadata_df = pd.read_csv(self.metadata_path, sep="|", header=None, quoting=3)
+        metadata_df.columns = ["client_id", "path", "sentence", "up_votes", "down_votes", "age", "gender", "accents", "locale", "segment"]
+        metadata_df = metadata_df[["path", "sentence"]]
+        metadata_df = metadata_df.sample(frac=1).reset_index(drop=True)
+        return(metadata_df)
+
         pass
 
-    def split_data(self) -> None:
+    def split_data(self, metadata_df) -> None:
         # Split the data into training and validation sets
+        split = int(len(metadata_df) * 0.80)
+        df_train = metadata_df[:split]
+        df_val = metadata_df[split:]
+
+        print(f"Size of the training set: {len(df_train)}")
+        print(f"Size of the validating set: {len(df_val)}")
+
         pass
 
 
@@ -31,14 +40,16 @@ class DataPrepocessor:
         self.frame_length = frame_length
         self.frame_step = frame_step
         self.fft_length = fft_length
-        
-        # Vocabulary Management
-        characters = [c for c in "abcdefghijklmnopqrstuvwxyz'àâéèêëîïôûùçœæ-?! "]
-        self.char_to_num = keras.layers.StringLookup(vocabulary=characters, oov_token="")
-        self.num_to_char = keras.layers.StringLookup(vocabulary=self.char_to_num.get_vocabulary(), oov_token="", invert=True)
+        self.characters = [c for c in ""]
 
     def process_audio_sample(audio_file, ) -> tuple:
         # Process the audio and label
+        pass
+
+    def char_to_num(self):
+        pass
+
+    def num_to_char(self):
         pass
 
     def create_dataset(self):
