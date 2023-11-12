@@ -1,4 +1,6 @@
 import pandas as pd
+import tensorflow as tf
+import keras
 
 # TODO
 class DataLoader():
@@ -36,20 +38,12 @@ class DataLoader():
 
 
 class DataPrepocessor:
-<<<<<<< HEAD
     def __init__(self, frame_length: int, frame_step: int, fft_length: int, audio_path) -> None:
         
         # Vocabulary Management
         characters = [c for c in "abcdefghijklmnopqrstuvwxyz'àâéèêëîïôûùçœæ-?! "]
         self.char_to_num = keras.layers.StringLookup(vocabulary=characters, oov_token="")
         self.num_to_char = keras.layers.StringLookup(vocabulary=self.char_to_num.get_vocabulary(), oov_token="", invert=True)
-=======
-    def __init__(self, frame_length: int, frame_step: int, fft_length: int) -> None:
-        self.frame_length = frame_length
-        self.frame_step = frame_step
-        self.fft_length = fft_length
-        self.characters = [c for c in ""]
->>>>>>> df20f78d8426cf9f10b3f4647d2f79375b4f2a56
 
         # Audio Management (MP3) and Spectrogram 
         self.frame_length = frame_length
@@ -92,12 +86,6 @@ class DataPrepocessor:
 
         # 10. Return label and spectrogram
         return spectrogram, label
-
-    def char_to_num(self):
-        pass
-
-    def num_to_char(self):
-        pass
 
     def create_dataset(self):
         pass
