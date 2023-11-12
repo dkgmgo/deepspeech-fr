@@ -1,10 +1,5 @@
 import pandas as pd
-# import numpy as np
 import tensorflow as tf
-# from tensorflow import keras
-# from tensorflow.keras import layers
-# import matplotlib.pyplot as plt
-# from IPython import display
 # TODO
 class DataLoader:
     def __init__(self) -> None:
@@ -14,8 +9,8 @@ class DataLoader:
         print(self.metadata_path)
 
 
-        metadata_df = self.load_data()  # Stockez le résultat dans metadata_df
-        self.split_data(metadata_df)    # Passez metadata_df à split_data
+        metadata_df = self.load_data()  # save the result in metadata_df
+        self.split_data(metadata_df)    # from  metadata_df to split_data
 
     def fetch_data(self) -> None:
         # Download data from the specified URL and return paths
@@ -40,6 +35,25 @@ class DataLoader:
         print(f"Size of the training set: {len(df_train)}")
         print(f"Size of the validating set: {len(df_val)}")
 
+
+class DataPrepocessor:
+    def __init__(self, frame_length: int, frame_step: int, fft_length: int) -> None:
+        self.frame_length = frame_length
+        self.frame_step = frame_step
+        self.fft_length = fft_length
+        self.characters = [c for c in ""]
+
+    def process_audio_sample(audio_file, ) -> tuple:
+        # Process the audio and label
+        pass
+
+    def char_to_num(self):
+        pass
+
+    def num_to_char(self):
+        pass
+
+    def create_dataset(self):
         batch_size = 32
         # Define the training dataset
         train_dataset = tf.data.Dataset.from_tensor_slices(
@@ -62,29 +76,6 @@ class DataLoader:
         )
 
         print(validation_dataset)
-
-        pass
-
-
-class DataPrepocessor:
-    def __init__(self, frame_length: int, frame_step: int, fft_length: int) -> None:
-        self.frame_length = frame_length
-        self.frame_step = frame_step
-        self.fft_length = fft_length
-        self.characters = [c for c in ""]
-
-    def process_audio_sample(audio_file, ) -> tuple:
-        # Process the audio and label
-        pass
-
-    def char_to_num(self):
-        pass
-
-    def num_to_char(self):
-        pass
-
-    def create_dataset(self):
-        pass
 
 
 
