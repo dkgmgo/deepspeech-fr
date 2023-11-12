@@ -1,3 +1,5 @@
+import tensorflow as tf
+from tensorflow import keras
 
 # TODO
 class DataLoader:
@@ -29,16 +31,14 @@ class DataPrepocessor:
         self.frame_length = frame_length
         self.frame_step = frame_step
         self.fft_length = fft_length
-        self.characters = [c for c in ""]
+        
+        # Vocabulary Management
+        characters = [c for c in "abcdefghijklmnopqrstuvwxyz'àâéèêëîïôûùçœæ-?! "]
+        self.char_to_num = keras.layers.StringLookup(vocabulary=characters, oov_token="")
+        self.num_to_char = keras.layers.StringLookup(vocabulary=self.char_to_num.get_vocabulary(), oov_token="", invert=True)
 
     def process_audio_sample(audio_file, ) -> tuple:
         # Process the audio and label
-        pass
-
-    def char_to_num(self):
-        pass
-
-    def num_to_char(self):
         pass
 
     def create_dataset(self):
