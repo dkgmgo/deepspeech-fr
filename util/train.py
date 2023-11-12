@@ -1,26 +1,70 @@
+import tensorflow as tf
+import keras
+import numpy as np
+from jiwer import wer
+
 
 class Trainer:
-    def __init__(self, model, train_dataset, validation_dataset):
+    def __init__(self, model, train_dataset, validation_dataset, preprocessor):
         self.model = model
         self.train_dataset = train_dataset
         self.validation_dataset = validation_dataset
-
-    def train(self, epochs, callbacks):
-        pass
-
-
-class Evaluator:
-    def __init__(self, validation_dataset, model):
-        self.validation_dataset = validation_dataset
-        self.model = model
+        self.preprocessor = preprocessor
 
     def decode_batch_predictions(self, pred):
-        # Decode batch predictions
-        pass
+        input_len = np.ones(pred.shape[0]) * pred.shape[1]
+        # Use greedy search. For complex tasks, you can use beam search
+        results = keras.backend.ctc_decode(
+            pred, input_length=input_len, greedy=True)[0][0]
+        # Iterate over the results and get back the text
+        output_text = []
+        for result in results:
+            result = tf.strings.reduce_join(
+                self.preprocessor.num_to_char(result)).numpy().decode("utf-8")
+            output_text.append(result)
+        return output_text
 
-    def evaluate(self):
-        # Evaluate the model on the validation set
-        pass
+    def train(self, epochs):
+        # Callback function to check transcription on the val set.
+        validation_callback = CallbackEval(self.validation_dataset, self)
+        # Train the model
+        history = self.model.fit(
+            self.train_dataset,
+            validation_data=self.validation_dataset,
+            epochs=epochs,
+            callbacks=[validation_callback],
+        )
 
-    def infer(self):
-        pass
+
+# A callback class to output a few transcriptions during training
+class CallbackEval(keras.callbacks.Callback):
+    """Displays a batch of outputs after every epoch."""
+
+    def __init__(self, dataset, trainer):
+        super().__init__()
+        self.dataset = dataset
+        self.trainer = trainer
+
+    def on_epoch_end(self, epoch: int, logs=None):
+        predictions = []
+        targets = []
+        for batch in self.dataset:
+            X, y = batch
+            batch_predictions = self.trainer.model.predict(X)
+            batch_predictions = self.trainer.decode_batch_predictions(
+                batch_predictions)
+            predictions.extend(batch_predictions)
+            for label in y:
+                label = (
+                    tf.strings.reduce_join(self.trainer.preprocessor.num_to_char(
+                        label)).numpy().decode("utf-8")
+                )
+                targets.append(label)
+        wer_score = wer(targets, predictions)
+        print("-" * 100)
+        print(f"Word Error Rate: {wer_score:.4f}")
+        print("-" * 100)
+        for i in np.random.randint(0, len(predictions), 2):
+            print(f"Target    : {targets[i]}")
+            print(f"Prediction: {predictions[i]}")
+            print("-" * 100)
