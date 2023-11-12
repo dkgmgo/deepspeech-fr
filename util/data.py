@@ -46,7 +46,7 @@ class DataPrepocessor:
         file = tf.io.read_file(self.audio_path + audio_file + ".mp3")
 
         # 2. Decode the audio
-        audio, _ = tf.audio.decode_mp3(file)
+        audio = tf.audio.decode_mp3(file)
         audio = tf.squeeze(audio, axis=-1)
         
         # 3. Put the audio in float32
