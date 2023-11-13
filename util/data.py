@@ -4,14 +4,15 @@ import tensorflow_io as tfio
 import keras
 
 
+# This class contains informations and method about data loading and dataframes creation
 class DataLoader():
     def __init__(self) -> None:
         data_path = "common_dataset/"
         self.audio_path = data_path + "clips/"
         self.metadata_path = data_path + "metadata.csv"
 
-        metadata_df = self.load_data()  # save the result in metadata_df
-        self.split_data(metadata_df)    # from  metadata_df to split_data
+        metadata_df = self.load_data()
+        self.split_data(metadata_df)
 
     def load_data(self) -> None:
         # we need a dataframe to manipulate information
@@ -52,43 +53,34 @@ class DataPrepocessor:
 
     def process_audio_sample(self, audio_file, label) -> tuple:
         # Process the audio and label
-        # 1. Find a mp3 file in the mp3 folder
-        file = tf.io.read_file(self.audio_path + audio_file)
 
-        # 2. Decode the audio
+        # Get audio data
+        file = tf.io.read_file(self.audio_path + audio_file)
         audio = tfio.audio.decode_mp3(file)
         audio = tf.squeeze(audio, axis=-1)
-
-        # 3. Put the audio in float32
         audio = tf.cast(audio, tf.float32)
 
-        # 4. Get the spectrogram
+        # Get the spectrogram
         spectrogram = tf.signal.stft(
             audio, frame_length=self.frame_length, frame_step=self.frame_step, fft_length=self.fft_length)
-
-        # 5. Doing the abs and the sqrt
+        # we don't use the phase at the moment
         spectrogram = tf.abs(spectrogram)
         spectrogram = tf.math.pow(spectrogram, 0.5)
 
-        # 6. Normalize the spectrogram
+        # Normalize the spectrogram
         means = tf.math.reduce_mean(spectrogram, 1, keepdims=True)
         stddevs = tf.math.reduce_std(spectrogram, 1, keepdims=True)
         spectrogram = (spectrogram - means) / (stddevs + 1e-10)
 
-        # 7. label in lower case
+        # Process the label
         label = tf.strings.lower(label)
-
-        # 8.  UTF-8
         label = tf.strings.unicode_split(label, input_encoding="UTF-8")
-
-        # 9. label to numbers
         label = self.char_to_num(label)
 
-        # 10. Return label and spectrogram
+        # Return label and spectrogram
         return spectrogram, label
 
-    def create_dataset_objets(self, data_loader):
-        batch_size = 32
+    def create_dataset_objets(self, data_loader, batch_size):
         # Define the training dataset
         train_dataset = tf.data.Dataset.from_tensor_slices(
             (list(data_loader.df_train["path"]),
