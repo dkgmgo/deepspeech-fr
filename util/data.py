@@ -17,7 +17,7 @@ class DataLoader():
     def load_data(self) -> None:
         # we need a dataframe to manipulate information
         metadata_df = pd.read_csv(
-            self.metadata_path, sep="|", header=None, quoting=3)
+            self.metadata_path, sep="|", header=0, quoting=3)
         metadata_df.columns = ["client_id", "path", "sentence", "up_votes",
                                "down_votes", "age", "gender", "accents", "locale", "segment"]
         metadata_df = metadata_df[["path", "sentence"]]
@@ -39,7 +39,7 @@ class DataPrepocessor:
 
         # Vocabulary Management
         characters = [
-            c for c in "abcdefghijklmnopqrstuvwxyz'àâéèêëîïôûùçœæ-?! "]
+            c for c in "abcdefghijklmnopqrstuvwxyzàâéèêëîïôûùçœæ'-,?! "]
         self.char_to_num = keras.layers.StringLookup(
             vocabulary=characters, oov_token="")
         self.num_to_char = keras.layers.StringLookup(
