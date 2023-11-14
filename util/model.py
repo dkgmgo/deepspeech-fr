@@ -78,6 +78,7 @@ class Model:
         model.compile(optimizer=opt, loss=self.compute_loss)
         return model
 
+    @keras.saving.register_keras_serializable(package="custom_losses", name="compute_loss")
     def compute_loss(self, y_true, y_pred):
         # Compute the training-time loss value
         batch_len = tf.cast(tf.shape(y_true)[0], dtype="int64")

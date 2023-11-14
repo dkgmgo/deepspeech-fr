@@ -21,4 +21,4 @@ if __name__ == "__main__":
 
     trainer = Trainer(model=ds_model.model, train_dataset=train_dataset,
                       validation_dataset=validation_dataset, preprocessor=preprocessor)
-    trainer.train(10)
+    trainer.train(10, 1)

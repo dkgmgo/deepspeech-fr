@@ -2,6 +2,7 @@ import tensorflow as tf
 import keras
 import numpy as np
 from jiwer import wer
+from time import time
 
 
 class Trainer:
@@ -24,15 +25,17 @@ class Trainer:
             output_text.append(result)
         return output_text
 
-    def train(self, epochs):
-        # Callback function to check transcription on the val set.
-        validation_callback = CallbackEval(self.validation_dataset, self)
+    def train(self, epochs, save_every_n_hours):
+        # Callbacks
+        validation_callback = CallbackEval(self)
+        saver_callback = CallbackSave(self, save_every_n_hours)
+
         # Train the model
         history = self.model.fit(
             self.train_dataset,
             validation_data=self.validation_dataset,
             epochs=epochs,
-            callbacks=[validation_callback],
+            callbacks=[validation_callback, saver_callback],
         )
 
 
@@ -40,15 +43,14 @@ class Trainer:
 class CallbackEval(keras.callbacks.Callback):
     """Displays a batch of outputs after every epoch."""
 
-    def __init__(self, dataset, trainer):
+    def __init__(self, trainer):
         super().__init__()
-        self.dataset = dataset
         self.trainer = trainer
 
     def on_epoch_end(self, epoch: int, logs=None):
         predictions = []
         targets = []
-        for batch in self.dataset:
+        for batch in self.trainer.validation_dataset:
             X, y = batch
             batch_predictions = self.trainer.model.predict(X)
             batch_predictions = self.trainer.decode_batch_predictions(
@@ -68,3 +70,27 @@ class CallbackEval(keras.callbacks.Callback):
             print(f"Target    : {targets[i]}")
             print(f"Prediction: {predictions[i]}")
             print("-" * 100)
+
+
+# A callback class to save the model periodically during the training
+class CallbackSave(keras.callbacks.Callback):
+    """Saves the model peridically"""
+
+    def __init__(self, trainer, save_every_n_hours=2):
+        super().__init__()
+        self.trainer = trainer
+        self.checkpoint_dir = 'trainings/'
+        self.save_every_n_seconds = save_every_n_hours * 3600  # Convert hours to seconds
+        self.last_save_time = 0
+
+    def on_batch_end(self, batch, logs=None):
+        current_time = time()
+        if current_time - self.last_save_time >= self.save_every_n_seconds:
+            self.save_model()
+            self.last_save_time = current_time
+
+    def save_model(self):
+        date_time = tf.keras.backend.get_value(tf.timestamp())
+        path = self.checkpoint_dir + f'deepspeech_fr_{date_time}.keras'
+        self.trainer.model.save(path)
+        print(f"Model checkpoint saved to {path}")
