@@ -91,6 +91,6 @@ class CallbackSave(keras.callbacks.Callback):
 
     def save_model(self):
         date_time = tf.keras.backend.get_value(tf.timestamp())
-        path = self.checkpoint_dir + f'deepspeech_fr_{date_time}.keras'
-        self.trainer.model.save(path)
+        path = self.checkpoint_dir + f'deepspeech_fr_{date_time}'
+        self.trainer.model.save_weights(path)
         print(f"Model checkpoint saved to {path}")
