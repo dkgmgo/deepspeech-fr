@@ -8,8 +8,6 @@ import tensorflow as tf
 from util.data import DataPrepocessor
 from util.model import Model
 
-import time
-
 preprocessor = DataPrepocessor(
     frame_length=256, frame_step=160, fft_length=384, audio_path="")
 ds_model = Model(input_dim=preprocessor.fft_length//2 + 1,

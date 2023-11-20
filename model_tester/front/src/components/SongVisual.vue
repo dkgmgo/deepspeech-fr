@@ -27,6 +27,7 @@ export default {
                 progressColor: 'purple',
                 backend: 'MediaElement',
                 mediaType: 'blob',
+                // TODO
                 /* plugins: [
                     WaveSurfer.spectrogram.create({
                         wavesurfer: this.wavesurfer,
