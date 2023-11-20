@@ -3,6 +3,7 @@ from keras import layers
 import keras
 
 
+# This object help us build the model
 class Model:
     def __init__(self, input_dim: int, output_dim: int, rnn_layers=5, rnn_units=128) -> None:
         self.input_dim = input_dim
@@ -13,7 +14,6 @@ class Model:
         self.model = self.build_model()
 
     def build_model(self):
-        """Model similar to DeepSpeech2."""
         # Model's input
         input_spectrogram = layers.Input((None, self.input_dim), name="input")
 
@@ -71,7 +71,7 @@ class Model:
         output = layers.Dense(units=self.output_dim + 1,
                               activation="softmax")(x)
         # Model
-        model = keras.Model(input_spectrogram, output, name="DeepSpeech_2")
+        model = keras.Model(input_spectrogram, output, name="DeepSpeech_2-fr")
         # Optimizer
         opt = keras.optimizers.Adam(learning_rate=1e-4)
         # Compile the model and return
