@@ -33,8 +33,11 @@
             </v-col>
         </v-row>
 
-        <v-row>
-            <v-col v-if="!isRecording && audioBlob">
+        <v-row v-if="!isRecording && audioBlob">
+            <v-col v-if="image_bytes">
+                <img :src="image" alt="Spectrogram"  class="spectro">
+            </v-col>
+            <v-col>
                 <SongVisual :audioBlob="audioBlob"/>
             </v-col>
         </v-row>
@@ -69,7 +72,8 @@ export default{
             mediaRecorder: null,
             audioBlob: null,
             prediction: "",
-            audioSent: false
+            audioSent: false,
+            image_bytes: null
         }
     },
 
@@ -88,6 +92,11 @@ export default{
 
         loader(){
             return this.audioSent && !this.prediction
+        },
+
+        image(){
+            console.log(this.image_bytes)
+            return "data:image/png;base64," +this.image_bytes
         }
     },
 
@@ -121,7 +130,9 @@ export default{
                 this.prediction = ""
                 const formData = new FormData();
                 formData.append('audio', this.audioBlob, 'audio.mp3');
-                this.prediction = await api.recognizeMp3(formData)
+                const data = await api.recognizeMp3(formData)
+                this.image_bytes = data.image
+                this.prediction = data.prediction
             }
         },
     },
@@ -136,5 +147,10 @@ export default{
 .text-huge {
     font-size: 3em;
     font-weight: bold;
+}
+
+.spectro {
+    width: 100%;
+    height: 350px;
 }
 </style>

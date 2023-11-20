@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div ref="waveform"></div>
+        <div ref="waveform" id="waveform"></div>
     </div>
 </template>
 
@@ -39,6 +39,7 @@ export default {
             });
 
             this.wavesurfer.loadBlob(this.audioBlob);
+            this.wavesurfer.setHeight(350)
         },
     },
 };
@@ -47,6 +48,6 @@ export default {
 <style scoped>
 #waveform {
     width: 100%;
-    height: 150px;
+    padding-top: 130px;
 }
 </style>

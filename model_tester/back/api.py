@@ -26,7 +26,7 @@ def recognize_mp3():
         return 'No file part', 404
 
     file = request.files['audio']
-    return utils.recognize_mp3(file=file)
+    return jsonify(utils.recognize_mp3(file=file))
 
 
 if __name__ == '__main__':

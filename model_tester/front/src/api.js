@@ -11,19 +11,19 @@ const instanceAxios = axios.create(
 
 
 const recognizeMp3 = async (formData) => {
-    let prediction = ""
+    let data = null
 
     try{
         const response = await instanceAxios.post('recognize', formData,{
         headers: {
             'Content-Type': 'multipart/form-data',
         },})
-        prediction = response.data.prediction
+        data = response.data
     }catch (error) {
         console.error('Error while recognizing the audio', error);
     }
 
-    return prediction
+    return data
 }
 
 const loadModel = async (selectedModel) => {
