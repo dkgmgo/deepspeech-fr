@@ -5,6 +5,7 @@ from jiwer import wer
 from time import time
 
 
+# Here we have our trainer, decoder and the different callbacks
 class Trainer:
     def __init__(self, model, train_dataset, validation_dataset, preprocessor):
         self.model = model
@@ -14,7 +15,6 @@ class Trainer:
 
     def decode_batch_predictions(self, pred):
         input_len = np.ones(pred.shape[0]) * pred.shape[1]
-        # Use greedy search. For complex tasks, you can use beam search
         results = keras.backend.ctc_decode(
             pred, input_length=input_len, greedy=True)[0][0]
         # Iterate over the results and get back the text

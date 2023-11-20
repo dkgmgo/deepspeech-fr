@@ -34,6 +34,7 @@ class DataLoader():
         print(f"Size of the validating set: {len(self.df_val)}")
 
 
+# This object isour data preprocessor (fft, dataset objects, ...)
 class DataPrepocessor:
     def __init__(self, frame_length: int, frame_step: int, fft_length: int, audio_path) -> None:
 
