@@ -27,9 +27,9 @@ const recognizeMp3 = async (formData) => {
 }
 
 const loadModel = async (selectedModel) => {
-    instanceAxios.post('load', {
-        'model': selectedModel
-    }).then(response => {
+    const formData = new FormData();
+    formData.append('model', selectedModel);
+    instanceAxios.post('load', formData).then(response => {
         console.log(response.data);
     }).catch(error => {
         console.error('Error loading the model:', error);

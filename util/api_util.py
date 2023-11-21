@@ -1,6 +1,5 @@
 import os
 import io
-import re
 import tempfile
 import shutil
 import keras
@@ -17,15 +16,16 @@ ds_model = Model(input_dim=preprocessor.fft_length//2 + 1,
                  output_dim=preprocessor.char_to_num.vocabulary_size(), rnn_units=512)
 
 
-def load_model(model_weights="deepspeech_fr_1_10_epochs"):
-    print("Model Loaded")
-    ds_model.model.load_weights("trainings/"+model_weights)
+def load_model(model_weights_dir="deepspeech_fr_1_27_epochs_wer_49"):
+    split_parts = model_weights_dir.split("_")
+    file = "_".join(split_parts[:5])
+
+    ds_model.model.load_weights("trainings/"+model_weights_dir+"/"+file)
+    print(f"Model {file} Loaded")
 
 
 def list_models():
     sortie = os.listdir("trainings/")
-    sortie = [item.split(".")[0] for item in sortie if re.match(
-        r'^(?!checkpoint$).*[^index]$', item)]
     return sortie
 
 

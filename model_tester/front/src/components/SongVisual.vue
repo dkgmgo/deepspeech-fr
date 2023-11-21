@@ -39,7 +39,6 @@ export default {
             });
 
             this.wavesurfer.loadBlob(this.audioBlob);
-            this.wavesurfer.setHeight(350)
         },
     },
 };

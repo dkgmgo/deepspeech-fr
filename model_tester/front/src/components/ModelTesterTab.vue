@@ -95,7 +95,6 @@ export default{
         },
 
         image(){
-            console.log(this.image_bytes)
             return "data:image/png;base64," +this.image_bytes
         }
     },
