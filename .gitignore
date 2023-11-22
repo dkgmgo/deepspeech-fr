@@ -5,5 +5,13 @@ __pycache__/
 # IDE
 .vscode/
 
-#trainings
+# trainings
 trainings/
+
+# front
+.DS_Store
+node_modules
+/dist
+.env.local
+.env.*.local
+package-lock.json
